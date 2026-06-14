@@ -5,7 +5,7 @@
 ## 1. Клонирование репозитория с GitHub
 Для клонирования репозитория необходимо выполнить команду из той папки, куда нужно склонировать:
 ```bash
-git clone https://github.com/DenisLearning2/team-finder-ad
+git clone https://github.com/DenisLearning2/tedt
 ```
 
 
