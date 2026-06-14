@@ -1,0 +1,17 @@
+{% for member in participants %}
+<a href="/users/{{ member.id }}" id="participant-{{ member.id }}">
+    <div class="participant-item">
+        <img src="{% if member.avatar %}{{ member.avatar.url }}{% else %}/static/images/default-avatar.png{% endif %}" 
+             alt="Аватар" 
+             class="participant-avatar">
+        <div class="participant-info">
+            <span class="participant-name">{{ member.name }} {{ member.surname }}</span>
+            <span class="participant-role">
+                {% if member.id == project.owner.id %}Автор проекта{% else %}Участник{% endif %}
+            </span>
+        </div>
+    </div>
+</a>
+{% empty %}
+<p id="no-participants">Пока нет участников</p>
+{% endfor %}

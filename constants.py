@@ -1,0 +1,21 @@
+"""Глобальные константы проекта"""
+
+# Пагинация
+USERS_PER_PAGE = 12
+PROJECTS_PER_PAGE = 12
+
+COLORS = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+        '#FFB347', '#5D9B9B', '#E8A0BF', '#A7C7E7', '#FFD966'
+    ]
+
+LENGTH_124 = 124
+LENGTH_256 = 256
+LENGTH_12 = 12
+LENGTH_200 = 200
+
+AVATAR_SIZE = (200, 200)
+
+STATUS_400 = 400
+STATUS_403 = 403
