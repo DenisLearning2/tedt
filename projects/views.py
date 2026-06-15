@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 
-from .models import Project
+from .models import Project, STATUS_ACTIVE, STATUS_CLOSED
 from .forms import ProjectForm
 from constants import PROJECTS_PER_PAGE, STATUS_400, STATUS_403
 from utils import paginate_queryset
@@ -14,8 +14,7 @@ from utils import paginate_queryset
 
 def project_list(request):
     """Главная страница со списком проектов"""
-    # pylint: disable=no-member
-    projects = Project.objects.filter(status=Project.STATUS_CHOICES[0][0])
+    projects = Project.objects.filter(status=STATUS_ACTIVE)
     projects_page = paginate_queryset(request, projects, PROJECTS_PER_PAGE)
 
     context = {
@@ -82,10 +81,10 @@ def complete_project(request, project_id):
         }, status=STATUS_403)
     
     # Затем проверяем статус
-    if project.status == Project.STATUS_CHOICES[0][0]:
-        project.status = Project.STATUS_CHOICES[1][0]
+    if project.status == STATUS_ACTIVE:
+        project.status = STATUS_CLOSED
         project.save()
-        return JsonResponse({'status': 'ok', 'project_status': Project.STATUS_CHOICES[1][0]})
+        return JsonResponse({'status': 'ok', 'project_status': project.status})
 
     return JsonResponse({
         'status': 'error', 
@@ -124,17 +123,17 @@ def toggle_participate(request, project_id):
 def create_project(request):
     """Создание проекта"""
     form = ProjectForm(request.POST or None)
-    if form.is_valid():
-        project = form.save(commit=False)
-        project.owner = request.user
-        project.save()
-        project.participants.add(request.user)  # Автор автоматически участник
-        return redirect('projects:project_detail', project_id=project.id)
-
-    return render(request, 'projects/create-project.html', {
-        'form': form,
-        'is_edit': False
-    })
+    if not form.is_valid():
+        return render(request, 'projects/create-project.html', {
+            'form': form,
+            'is_edit': False
+        })
+        
+    project = form.save(commit=False)
+    project.owner = request.user
+    project.save()
+    project.participants.add(request.user)  # Автор автоматически участник
+    return redirect('projects:project_detail', project_id=project.id)
 
 
 @login_required
@@ -147,12 +146,12 @@ def edit_project(request, project_id):
         return redirect('projects:project_detail', project_id=project.id)
     
     form = ProjectForm(request.POST or None, instance=project)
-    if form.is_valid():
-        form.save()
-        return redirect('projects:project_detail', project_id=project.id)
+    if not form.is_valid():
+        return render(request, 'projects/create-project.html', {
+            'form': form,
+            'is_edit': True,
+            'project': project
+        })
 
-    return render(request, 'projects/create-project.html', {
-        'form': form,
-        'is_edit': True,
-        'project': project
-    })
+    form.save()
+    return redirect('projects:project_detail', project_id=project.id)

@@ -34,7 +34,6 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Модель пользователя с расширенными полями и функционалом генерации аватарки."""
-    COLORS = COLORS
 
     email = models.EmailField(unique=True, verbose_name='Email')
     name = models.CharField(max_length=LENGTH_124, verbose_name='Имя')
@@ -70,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         # Приводим телефон к формату +7XXXXXXXXXX
-        color = random.choice(self.COLORS)
+        color = random.choice(COLORS)
         if self.phone:
             if self.phone.startswith('8'):
                 self.phone = '+7' + self.phone[1:]
@@ -84,7 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def generate_avatar(self):
         """Генерирует аватарку с первой буквой имени на цветном фоне"""
         size = AVATAR_SIZE
-        image = Image.new('RGB', size, self.get_random_color())
+        image = Image.new('RGB', size, random.choice(COLORS))
         draw = ImageDraw.Draw(image)
 
         # Буква для отображения
@@ -136,10 +135,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         buffer.seek(0)
 
         return ContentFile(buffer.read(), name=f'avatar_{str(self.email).replace("@", "_")}.png')
-
-    def get_random_color(self):
-        """Выбирает случайный цвет из предопределенного списка."""
-        return random.choice(COLORS)
     
     def get_full_name(self):
         """Возвращает полное имя пользователя."""
@@ -151,4 +146,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ['id']
+        ordering = ['created_at']

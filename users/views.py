@@ -3,10 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.paginator import Paginator
 from django.contrib.auth.forms import PasswordChangeForm
 
-from projects.models import Project
 from utils import paginate_queryset
 from constants import USERS_PER_PAGE
 from .models import User
@@ -17,29 +15,29 @@ def register_view(request):
     """Регистрация пользователя"""
     form = RegistrationForm(request.POST or None)
     
-    if form.is_valid():
-        user = form.save(commit=False)
-        user.set_password(form.cleaned_data['password'])
-        user.save()
-        login(request, user)
-        return redirect('projects:project_list')
-
-    return render(request, 'users/register.html', {'form': form})
+    if not form.is_valid():
+        return render(request, 'users/register.html', {'form': form})
+        
+    user = form.save(commit=False)
+    user.set_password(form.cleaned_data['password'])
+    user.save()
+    login(request, user)
+    return redirect('projects:project_list')
 
 
 def login_view(request):
     """Вход в систему"""
     form = LoginForm(request.POST or None)
-    if form.is_valid():
-        email = form.cleaned_data['email']
-        password = form.cleaned_data['password']
-        user = authenticate(request, email=email, password=password)
-        if user:
-            login(request, user)
-            return redirect('projects:project_list')
-        form.add_error(None, 'Неверный имейл или пароль')
+    if not form.is_valid():
+        return render(request, 'users/login.html', {'form': form})
 
-    return render(request, 'users/login.html', {'form': form})
+    email = form.cleaned_data['email']
+    password = form.cleaned_data['password']
+    user = authenticate(request, email=email, password=password)
+    if user:
+        login(request, user)
+        return redirect('projects:project_list')
+    form.add_error(None, 'Неверный имейл или пароль')
 
 
 def logout_view(request):
@@ -68,27 +66,29 @@ def user_detail(request, user_id):
 def edit_profile(request):
     """Редактирование профиля"""
     form = EditProfileForm(request.POST or None, request.FILES or None, instance=request.user)
-    if form.is_valid():
-        user = form.save(commit=False)
-        if not user.phone or user.phone.strip() == '':
-            user.phone = None
-        user.save()
-        messages.success(request, 'Профиль успешно обновлён')
-        return redirect('users:user_detail', user_id=request.user.id)
+    if not form.is_valid():
+        return render(request, 'users/edit_profile.html', {'form': form})
 
-    return render(request, 'users/edit_profile.html', {'form': form})
+    user = form.save(commit=False)
+    if not user.phone or user.phone.strip() == '':
+        user.phone = None
+    user.save()
+    messages.success(request, 'Профиль успешно обновлён')
+    return redirect('users:user_detail', user_id=request.user.id)
+
 
 
 @login_required
 def change_password(request):
     """Смена пароля"""
     form = PasswordChangeForm(user=request.user, data=request.POST or None)
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Пароль успешно изменён')
-        return redirect('users:user_detail', user_id=request.user.id)
+    if not form.is_valid():
+        return render(request, 'users/change_password.html', {'form': form})
 
-    return render(request, 'users/change_password.html', {'form': form})
+    form.save()
+    messages.success(request, 'Пароль успешно изменён')
+    return redirect('users:user_detail', user_id=request.user.id)
+
 
 
 def user_list(request):

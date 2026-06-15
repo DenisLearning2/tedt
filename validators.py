@@ -10,7 +10,7 @@ def validate_github_url(value):
     
     # Регулярное выражение для точной проверки GitHub URL
     github_pattern = re.compile(
-        r'^(https?://)?(www\.)?github\.com/[\w.-]+/?$',
+        r'^(https?://)?(www\.)?github\.com/[\w.-]+/?',
         re.IGNORECASE
     )
     

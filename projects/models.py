@@ -1,25 +1,18 @@
 """Модели приложения проектов"""
 from django.db import models
 from django.conf import settings
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 from constants import LENGTH_200
+from validators import validate_github_url
 
-
-def validate_github_url(value):
-    """Проверяет, что ссылка ведёт на GitHub"""
-    if value and value.strip():
-        URLValidator()(value)
-        if 'github.com' not in value.lower():
-            raise ValidationError('Ссылка должна вести на GitHub')
-
+STATUS_ACTIVE = 'открыт'
+STATUS_CLOSED = 'закрыт'
 
 class Project(models.Model):
-    '''Модель проекта'''
+    """Модель проекта"""
     STATUS_CHOICES = [
-        ('open', 'Open'),
-        ('closed', 'Closed'),
+        ('открыт', 'Открыт'),
+        ('закрыт', 'Закрыт'),
     ]
 
     name = models.CharField(max_length=LENGTH_200, verbose_name='Название проекта')
@@ -34,7 +27,7 @@ class Project(models.Model):
     github_url = models.URLField(blank=True, null=True, validators=[validate_github_url],
                                  verbose_name='Ссылка на GitHub')
     status = models.CharField(max_length=max(len(status[0]) for status in STATUS_CHOICES),
-                              choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0],
+                              choices=STATUS_CHOICES, default=STATUS_ACTIVE,
                               verbose_name='Статус')
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -46,9 +39,7 @@ class Project(models.Model):
     def __str__(self):
         return str(self.name)
 
-    # pylint: disable=too-few-public-methods
     class Meta:
-        '''Class Meta'''
         ordering = ['-created_at']
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекты'

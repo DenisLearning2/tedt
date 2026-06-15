@@ -5,10 +5,8 @@ from .models import Project
 
 
 class ProjectForm(forms.ModelForm):
-    '''Форма для создания проекта'''
-    # pylint: disable=too-few-public-methods
+    """Форма для создания проекта"""
     class Meta:
-        '''class Meta'''
         model = Project
         fields = ['name', 'description', 'github_url', 'status']
         widgets = {

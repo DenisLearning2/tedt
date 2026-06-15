@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class ProjectsConfig(AppConfig):
-    '''Настройки приложения'''
+    """Настройки приложения"""
     name = 'projects'

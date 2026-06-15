@@ -6,7 +6,7 @@ from .models import User
 
 
 class UserAdmin(UserAdmin):
-    '''Настройка отображения модели User в админке'''
+    """Настройка отображения модели User в админке"""
     model = User
     list_display = ['email', 'name', 'surname', 'phone', 'is_staff']
     list_filter = ['is_staff', 'is_active', 'created_at']

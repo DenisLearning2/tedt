@@ -11,9 +11,8 @@ class RegistrationForm(forms.ModelForm):
         label='Пароль'
     )
 
-    # pylint: disable=too-few-public-methods
     class Meta:
-        '''Meta class for RegistrationForm.'''
+        """Meta class for RegistrationForm."""
         model = User
         fields = ['name', 'surname', 'email', 'password']
 
@@ -34,14 +33,13 @@ class LoginForm(forms.Form):
 
 class EditProfileForm(forms.ModelForm):
     """Form for editing user profile."""
-    # pylint: disable=too-few-public-methods
     class Meta:
-        '''Meta class for EditProfileForm.'''
+        """Meta class for EditProfileForm."""
         model = User
         fields = ['name', 'surname', 'avatar', 'about', 'phone', 'github_url']
 
     def clean_phone(self):
-        '''Validate and normalize the phone number.'''
+        """Validate and normalize the phone number."""
         phone = self.cleaned_data.get('phone')
         instance = getattr(self, 'instance', None)
 
