@@ -1,4 +1,4 @@
-**Автор: [Гусельникоа Денис] (https://github.com/DenisLearning2)**
+**Автор: [Гусельников Денис](https://github.com/DenisLearning2)**
 **Техно-стек: Python 3.10.6, Django 5.2.4, PostgreSQL, SQLite3(для теста), Docker(Desktop обязательно)**
 
 # Первоначальная настройка проекта TeamFinder
